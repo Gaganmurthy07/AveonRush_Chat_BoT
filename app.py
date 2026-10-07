@@ -185,8 +185,3 @@ if prompt := st.chat_input("Type your message here..."):
     with st.chat_message("assistant"):
         st.markdown(response)
 
-# 8. Launch Application
-if __name__ == "__main__":
-    demo.launch(share=True, debug=True)
-
-
