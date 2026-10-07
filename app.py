@@ -24,7 +24,6 @@ else:
 
 import os
 import gradio as gr
-from google.colab import userdata
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -32,7 +31,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_groq import ChatGroq
 
 # Retrieve your key
-groq_api_key = userdata.get('Prompt')
+groq_api_key = st.secrets["Prompt"]
 # Initialize the Groq LLM
 # 1. Initialize Groq LLM
 llm = ChatGroq(
