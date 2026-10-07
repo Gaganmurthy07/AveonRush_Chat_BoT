@@ -2,12 +2,17 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.prompts import FewShotPromptTemplate
 from langchain_groq import ChatGroq
 
-from google.colab import userdata #Read The Secrets Which is added in the Google Collab (Prompt)
-try:
-    groq_api_key = userdata.get('Prompt')
-    print("Getting Groq API KEY successfully.")
-except Exception as e:
-    print(f"Error getting Groq API KEY. Make sure your API key is set correctly. Error: {e}")
+import streamlit as st
+from groq import Groq
+
+# Retrieve your key securely from Streamlit Secrets
+groq_api_key = st.secrets["Prompt"]
+
+client = Groq(api_key=groq_api_key)
+if client:
+    print("GROQ Client Initialized Successfully")
+else:
+    print("GROQ Client Initialization Failed")
 
 from groq import Groq
 
