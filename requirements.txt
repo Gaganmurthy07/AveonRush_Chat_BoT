@@ -1,0 +1,10 @@
+groq
+langchain
+langchain-core
+langchain-community
+langchain-groq
+gradio
+python-dotenv
+pydantic-settings
+requests
+httpx-sse
