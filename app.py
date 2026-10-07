@@ -136,22 +136,54 @@ def respond(message, history, persona_name):
     return response
 
 # 7. Gradio UI Construction
-with gr.Blocks(title="PragyanAI - Multi-Persona AI Sales Agent") as demo:
-    gr.Markdown("# Enterprise Multi-Persona Sales Bot")
-    gr.Markdown("Powered by **Groq**, **LangChain LCEL**, and **Gradio**.")
+import streamlit as st
 
-    with gr.Row():
-        persona_selector = gr.Dropdown(
-            choices=list(SALES_PROMPTS.keys()),
-            value="SaaS Consultative Sales",
-            label="Select Sales Persona / Bot Strategy",
-            interactive=True
-        )
+# Streamlit UI Construction
+st.title("Enterprise Multi-Persona Sales Bot")
+st.markdown("Powered by **Groq**, **LangChain LCEL**, and **Streamlit**.")
 
-    chatbot_ui = gr.ChatInterface(
-        fn=respond,
-        additional_inputs=[persona_selector]
+# Persona Selector dropdown
+persona_name = st.selectbox(
+    "Select Sales Persona / Bot Strategy",
+    options=list(SALES_PROMPTS.keys())
+)
+
+# Initialize chat history in Streamlit session state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display prior chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Accept user input via chat input box
+if prompt := st.chat_input("Type your message here..."):
+    # Display user message
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Generate session ID based on active persona
+    session_id = f"streamlit_session_{persona_name.replace(' ', '_')}"
+    base_chain = create_sales_chain(persona_name)
+    conversational_chain = RunnableWithMessageHistory(
+        base_chain, 
+        get_session_history, 
+        input_messages_key="input", 
+        history_messages_key="history"
     )
+    
+    # Get response from LLM
+    response = conversational_chain.invoke(
+        {"input": prompt}, 
+        config={"configurable": {"session_id": session_id}}
+    )
+
+    # Display assistant response
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    with st.chat_message("assistant"):
+        st.markdown(response)
 
 # 8. Launch Application
 if __name__ == "__main__":
